@@ -1,0 +1,41 @@
+
+class Solution {
+    public static ArrayList<Integer> topoSort(int V, int[][] edges) {
+     ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            adj.get(u).add(v);  // Directed graph: only u → v
+        }
+
+        boolean[] visited = new boolean[V];
+        Stack<Integer> st= new Stack<>();
+        for(int i=0;i<V;i++){
+            if(!visited[i]){
+                helper(adj,visited,st,i);
+            }
+        }
+        
+        ArrayList<Integer> result= new ArrayList<>();
+        while(!st.isEmpty()){
+            result.add(st.pop());
+        }
+        return result;
+        
+    }
+    static void helper(ArrayList<ArrayList<Integer>> adj, boolean[] visited, Stack<Integer> st,int u){
+        visited[u]=true;
+        
+        
+        for(int n: adj.get(u)){
+            if(!visited[n]){
+                helper(adj,visited,st,n);
+            }
+        }
+        st.push(u);
+    }
+}

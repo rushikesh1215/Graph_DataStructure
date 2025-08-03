@@ -1,0 +1,60 @@
+class Solution {
+    public class node {
+        int val;
+        int p;
+
+        node(int val, int p) {
+            this.val = val;
+            this.p = p;
+        }
+    }
+
+    public boolean isCycle(int V, int[][] edges) {
+        // Create adjacency list
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            adj.get(u).add(v);
+            adj.get(v).add(u); // Undirected graph
+        }
+
+        boolean[] visited = new boolean[V];
+
+        // Check all components
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                if (helper(adj, visited, i, -1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    boolean helper(ArrayList<ArrayList<Integer>> adj, boolean[] visited, int u, int p) {
+        Queue<node> q = new LinkedList<>();
+        q.add(new node(u, p));
+        visited[u] = true;
+
+        while (!q.isEmpty()) {
+            node curr = q.poll();
+
+            for (int nei : adj.get(curr.val)) {
+                if (nei == curr.p) continue;
+
+                if (visited[nei]) return true;
+
+                visited[nei] = true;
+                q.add(new node(nei, curr.val));
+            }
+        }
+
+        return false;
+    }
+}

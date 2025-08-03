@@ -1,0 +1,59 @@
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> kosarajuSCC(int V, List<List<Integer>> adj) {
+        boolean[] visited = new boolean[V];
+        Stack<Integer> stack = new Stack<>();
+
+        // Step 1: Normal DFS to fill stack by finish time
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                dfs(i, adj, visited, stack);
+            }
+        }
+
+        // Step 2: Reverse the graph
+        List<List<Integer>> revAdj = new ArrayList<>();
+        for (int i = 0; i < V; i++) revAdj.add(new ArrayList<>());
+        for (int u = 0; u < V; u++) {
+            for (int v : adj.get(u)) {
+                revAdj.get(v).add(u);  // reverse the edge
+            }
+        }
+
+        // Step 3: Do DFS on reversed graph in order of stack
+        Arrays.fill(visited, false);
+        List<List<Integer>> sccs = new ArrayList<>();
+
+        while (!stack.isEmpty()) {
+            int node = stack.pop();
+            if (!visited[node]) {
+                List<Integer> scc = new ArrayList<>();
+                reverseDFS(node, revAdj, visited, scc);
+                sccs.add(scc);
+            }
+        }
+
+        return sccs;
+    }
+
+    private void dfs(int node, List<List<Integer>> adj, boolean[] visited, Stack<Integer> stack) {
+        visited[node] = true;
+        for (int neighbor : adj.get(node)) {
+            if (!visited[neighbor]) {
+                dfs(neighbor, adj, visited, stack);
+            }
+        }
+        stack.push(node);
+    }
+
+    private void reverseDFS(int node, List<List<Integer>> revAdj, boolean[] visited, List<Integer> scc) {
+        visited[node] = true;
+        scc.add(node);
+        for (int neighbor : revAdj.get(node)) {
+            if (!visited[neighbor]) {
+                reverseDFS(neighbor, revAdj, visited, scc);
+            }
+        }
+    }
+}

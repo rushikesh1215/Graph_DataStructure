@@ -1,0 +1,51 @@
+
+
+class Solution {
+    static class Pair {
+        int node, weight;
+        Pair(int n, int w) {
+            node = n;
+            weight = w;
+        }
+    }
+
+   
+
+    // Driver
+   
+    public int spanningTree(int V, int[][] edges) {
+        // code hereP
+         List<List<Pair>> adj = new ArrayList<>();
+        for (int i = 0; i < V; i++) adj.add(new ArrayList<>());
+
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            adj.get(u).add(new Pair(v, w));
+            adj.get(v).add(new Pair(u, w)); // undirected graph
+        }
+
+        // Step 2: Prim's algorithm
+        boolean[] visited = new boolean[V];
+        PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> a.weight - b.weight);
+        pq.offer(new Pair(0, 0)); // Start from node 0
+        int mstWeight = 0;
+
+        while (!pq.isEmpty()) {
+            Pair current = pq.poll();
+            int node = current.node, wt = current.weight;
+
+            if (visited[node]) continue;
+            visited[node] = true;
+            mstWeight += wt;
+
+            for (Pair neighbor : adj.get(node)) {
+                if (!visited[neighbor.node]) {
+                    pq.offer(new Pair(neighbor.node, neighbor.weight));
+                }
+            }
+        }
+
+        return mstWeight;
+        
+    }
+}

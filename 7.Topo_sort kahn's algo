@@ -1,0 +1,52 @@
+class Solution {
+    public List<Integer> topoSort(int V, int[][] edges) {
+        // Step 1: Build adjacency list
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            adj.get(u).add(v); // Directed edge u → v
+        }
+
+        // Step 2: Compute in-degree of each node
+        int[] indegree = new int[V];
+        for (int u = 0; u < V; u++) {
+            for (int v : adj.get(u)) {
+                indegree[v]++;
+            }
+        }
+
+        // Step 3: Initialize queue with nodes having in-degree 0
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < V; i++) {
+            if (indegree[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        // Step 4: Perform BFS and construct topological order
+        List<Integer> topo = new ArrayList<>();
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            topo.add(u);
+
+            for (int v : adj.get(u)) {
+                indegree[v]--;
+                if (indegree[v] == 0) {
+                    q.add(v);
+                }
+            }
+        }
+
+        // Optional: Check if topological sorting was possible (i.e., no cycle)
+        if (topo.size() != V) {
+            throw new RuntimeException("Graph has a cycle; topological sort not possible.");
+        }
+
+        return topo;
+    }
+}
